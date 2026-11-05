@@ -3,7 +3,6 @@ id = "movement_status"
 version = "0.1.0"
 priority = 100
 
-# Pin to a Nightly you have tested against (or leave the one below and update after your first successful build).
 [compatibility]
 horizon_revision = "4baa571566e39bfd6594988d3bb2bc85440c30e7"
 
