@@ -28,13 +28,21 @@ pub fn status_lines(
     sprinting: bool,
     crouching: bool,
     flying: bool,
+    fall_flying: bool,
     sprint_held: bool,
     sneak_held: bool,
+    toggle_sprint: bool,
+    toggle_sneak: bool,
 ) -> Vec<String> {
     let mut lines = Vec::new();
 
-    if sprinting { let mode = if sprint_held { "[Held]" } else { "[Toggled]" }; lines.push(format!("Sprint {mode}")); }
-    if crouching { let mode = if sneak_held { "[Held]" } else { "[Toggled]" }; lines.push(format!("Sneak {mode}")); }
-    if flying { lines.push("Flying".to_string()); }
+    if sprinting { let mode = if sprint_held { "[Held]" } else if toggle_sprint { "[Toggled]" } else { "[Held]" };
+        lines.push(format!("Sprint {mode}"));
+    }
+    if crouching { let mode = if sneak_held { "[Held]" } else if toggle_sneak { "[Toggled]" } else { "[Held]" };
+        lines.push(format!("Sneak {mode}"));
+    }
+    if fall_flying { lines.push("Flying [Elytra]".to_string()); } else if flying { lines.push("Flying".to_string()); }
+
     lines
 }
