@@ -1,31 +1,44 @@
-fn movement_status_hud(
-    game: &mut crate::game::Game<'_>,
-    batch: &mut horizon_client::hud::HudBatch,
-    corners: &mut horizon_client::extras_hud::Corners,
-) {
+fn movement_status_hud( game: &mut crate::game::Game<'_>, batch: &mut horizon_client::hud::HudBatch, corners: &mut horizon_client::extras_hud::Corners, ) {
     use crate::game::mod_movement_status as m;
     use horizon_client::extras::Corner;
+    use winit::keyboard::KeyCode;
 
     if !game.native_on(m::ID) || !game.native_corner_shown(Corner::BottomLeft) { return; }
 
-    // Read key state first (needs &mut game), then the player (immutable).
-    let sprint_held = game
+    let Some(p) = game.player.as_ref() else { return; };
+
+    // Logical held state (stays true under vanilla toggle)
+    let sprint_logical = game
         .native_mapping("key.sprint")
         .map(|(held, _)| held)
         .unwrap_or(false);
-    let sneak_held = game
+    let sneak_logical = game
         .native_mapping("key.sneak")
         .map(|(held, _)| held)
         .unwrap_or(false);
 
-    let Some(p) = game.player.as_ref() else { return; };
+    // Physical key state (actual key currently pressed)
+    // Defaults are Left Control / Left Shift; rebinds will need a follow-up
+    // that maps the bound key string → KeyCode if you want full rebind support.
+    let sprint_phys = game.physical_keys.contains(&KeyCode::ControlLeft);
+    let sneak_phys = game.physical_keys.contains(&KeyCode::ShiftLeft);
+
+    let toggle_sprint = game.settings.toggle_sprint;
+    let toggle_sneak = game.settings.toggle_crouch;
+
+    // Prefer physical for the "Held" decision; fall back to logical + setting
+    let sprint_held = sprint_phys || (sprint_logical && !toggle_sprint);
+    let sneak_held = sneak_phys || (sneak_logical && !toggle_sneak);
 
     let lines = m::status_lines(
         p.sprinting,
         p.local_crouching,
         p.flying,
+        p.fall_flying,
         sprint_held,
         sneak_held,
+        toggle_sprint,
+        toggle_sneak,
     );
 
     if lines.is_empty() { return; }
