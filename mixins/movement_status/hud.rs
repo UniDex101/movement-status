@@ -6,15 +6,10 @@ fn movement_status_hud(
     use crate::game::mod_movement_status as m;
     use horizon_client::extras::Corner;
 
-    if !game.native_on(m::ID) || !game.native_corner_shown(Corner::BottomLeft) {
-        return;
-    }
+    if !game.native_on(m::ID) || !game.native_corner_shown(Corner::BottomLeft) { return; }
 
-    let Some(p) = game.player.as_ref() else {
-        return;
-    };
+    let Some(p) = game.player.as_ref() else { return; };
 
-    // Physical key holds via the normal mapping helper (respects the player's binds).
     let sprint_held = game
         .native_mapping("key.sprint")
         .map(|(held, _)| held)
@@ -26,15 +21,13 @@ fn movement_status_hud(
 
     let lines = m::status_lines(
         p.sprinting,
-        p.local_crouching, // or p.crouching depending on exact field name in your Horizon
+        p.local_crouching,
         p.flying,
         sprint_held,
         sneak_held,
     );
 
-    if lines.is_empty() {
-        return;
-    }
+    if lines.is_empty() { return; }
 
     let w = lines
         .iter()
@@ -45,9 +38,7 @@ fn movement_status_hud(
 
     let (x, y) = corners.place(Corner::BottomLeft, w, h);
 
-    if m::background(|| game.native_setting(m::ID, "background")) {
-        game.native_fill(batch, [x, y, w, h], m::BACKGROUND);
-    }
+    if m::background(|| game.native_setting(m::ID, "background")) { game.native_fill(batch, [x, y, w, h], m::BACKGROUND); }
 
     for (i, line) in lines.iter().enumerate() {
         game.native_text(
