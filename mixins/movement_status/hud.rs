@@ -8,8 +8,7 @@ fn movement_status_hud(
 
     if !game.native_on(m::ID) || !game.native_corner_shown(Corner::BottomLeft) { return; }
 
-    let Some(p) = game.player.as_ref() else { return; };
-
+    // Read key state first (needs &mut game), then the player (immutable).
     let sprint_held = game
         .native_mapping("key.sprint")
         .map(|(held, _)| held)
@@ -18,6 +17,8 @@ fn movement_status_hud(
         .native_mapping("key.sneak")
         .map(|(held, _)| held)
         .unwrap_or(false);
+
+    let Some(p) = game.player.as_ref() else { return; };
 
     let lines = m::status_lines(
         p.sprinting,
@@ -38,7 +39,7 @@ fn movement_status_hud(
 
     let (x, y) = corners.place(Corner::BottomLeft, w, h);
 
-    if m::background(|| game.native_setting(m::ID, "background")) { game.native_fill(batch, [x, y, w, h], m::BACKGROUND); }
+    if m::background(|| game.native_setting(m::ID, "background")) { game.native_fill(batch, [x, y, w, h], m::BACKGROUND_COLOR); }
 
     for (i, line) in lines.iter().enumerate() {
         game.native_text(
