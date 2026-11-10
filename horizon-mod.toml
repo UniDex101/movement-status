@@ -1,0 +1,17 @@
+schema = 1
+id = "movement_status"
+name = "Movement Status"
+version = "0.1.1"
+description = "Multi-line HUD showing sprint / sneak / flying status from the player's current state and physical key holds. Optional background box."
+authors = ["Unidex101"]
+license = "MIT"
+repository = ""
+
+[environment]
+client = "required"
+server = "unsupported"
+
+[compatibility]
+game = ["26.3"]
+horizon = ">=0.2.0-nightly.2026.10.28"
+api = 1
